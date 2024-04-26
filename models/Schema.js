@@ -25,15 +25,21 @@ const dressSchema = new Schema({
     },
     image1: {
         data: Buffer,
-        contentType: String
+        type: String,
+        required: true
+
     },
     image2: {
         data: Buffer,
-        contentType: String
+        type: String,
+        required: true
+
     },
     image3: {
         data: Buffer,
-        contentType: String
+        type: String,
+        required: true
+
     },
     material: {
         type: String,

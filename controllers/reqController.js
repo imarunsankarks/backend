@@ -42,7 +42,21 @@ const createNew = async (req, res) => {
                 return res.status(400).json({ error: err.message });
             }
 
-            // File upload successful, continue with processing the request
+            // Process uploaded files
+            const processImage = (fieldName) => {
+                if (!req.files[fieldName]) {
+                    return null;
+                }
+                const imageBuffer = req.files[fieldName][0].buffer;
+                return "data:image/gif;base64," + imageBuffer.toString('base64');
+            };
+
+            // Convert uploaded images to base64
+            const image1Data = processImage('image1');
+            const image2Data = processImage('image2');
+            const image3Data = processImage('image3');
+
+            // Extract other fields from req.body
             const {
                 id,
                 name,
@@ -56,12 +70,7 @@ const createNew = async (req, res) => {
                 status
             } = req.body;
 
-            const { image1, image2, image3 } = req.files;
-
-            const image1Data = image1[0].buffer.toString('base64');
-            const image2Data = image2[0].buffer.toString('base64');
-            const image3Data = image3[0].buffer.toString('base64');
-
+            // Construct dress data object with base64 image data
             const dressData = {
                 id,
                 name,
@@ -78,14 +87,17 @@ const createNew = async (req, res) => {
                 status
             };
 
+            // Save dress data to database
             const newDress = await schema.create(dressData);
 
+            // Respond with the newly created dress
             res.status(200).json(newDress);
         });
     } catch (e) {
         res.status(400).json({ error: e.message });
     }
 }
+
 
 
 
