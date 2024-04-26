@@ -1,6 +1,9 @@
 const schema = require('../models/Schema')
 const mongoose = require('mongoose')
 const fs = require('fs');
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // base64
 function base64_encode(file) {
@@ -29,50 +32,61 @@ const getOne = async (req, res) => {
 
 // add a new data
 const createNew = async (req, res) => {
-
     try {
-        const {
-            id,
-            name,
-            category,
-            color,
-            price,
-            image1,
-            image2,
-            image3,
-            material,
-            size,
-            quantity,
-            offer,
-            status
-        } = req.body;
+        // Configure multer middleware for file uploads
+        const upload = multer({ storage: storage }).fields([{ name: 'image1' }, { name: 'image2' }, { name: 'image3' }]);
 
-        const base64str1 = base64_encode(image1);
-        const base64str2 = base64_encode(image2);
-        const base64str3 = base64_encode(image3);
+        // Execute multer middleware to handle file uploads
+        upload(req, res, async (err) => {
+            if (err) {
+                return res.status(400).json({ error: err.message });
+            }
 
-        const dressData = {
-            id,
-            name,
-            category,
-            color,
-            price,
-            image1: base64str1,
-            image2: base64str2,
-            image3: base64str3,
-            material,
-            size,
-            quantity,
-            offer,
-            status
-        };
-        const newDress = await schema.create(dressData)
-        res.status(200).json(newDress);
+            // File upload successful, continue with processing the request
+            const {
+                id,
+                name,
+                category,
+                color,
+                price,
+                material,
+                size,
+                quantity,
+                offer,
+                status
+            } = req.body;
 
+            const { image1, image2, image3 } = req.files;
+
+            const image1Data = image1[0].buffer.toString('base64');
+            const image2Data = image2[0].buffer.toString('base64');
+            const image3Data = image3[0].buffer.toString('base64');
+
+            const dressData = {
+                id,
+                name,
+                category,
+                color,
+                price,
+                image1: image1Data,
+                image2: image2Data,
+                image3: image3Data,
+                material,
+                size,
+                quantity,
+                offer,
+                status
+            };
+
+            const newDress = await schema.create(dressData);
+
+            res.status(200).json(newDress);
+        });
     } catch (e) {
         res.status(400).json({ error: e.message });
     }
 }
+
 
 
 // delete a data

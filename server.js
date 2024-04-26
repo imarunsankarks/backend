@@ -18,6 +18,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+
 app.use(function (req, res, next) {
     next();
 });
