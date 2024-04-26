@@ -11,7 +11,7 @@ const app = express();
 // middleware
 app.use(express.json());
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://peacock-dashboard.onrender.com'],
     methods: ['GET', 'POST', 'DELETE', 'PATCH'], // specify allowed HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'] // specify allowed headers
 };
