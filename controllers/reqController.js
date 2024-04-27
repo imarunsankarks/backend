@@ -64,27 +64,33 @@ const createNew = async (req, res) => {
                 offer,
                 status
             } = req.body;
-            console.log(size);
+            // Convert size and quantity strings to arrays
+            const sizearray = size ? size.split(',').map(item => item.trim()) : [];
+            const quantityarray = quantity ? quantity.split(',').map(item => item.trim()) : [];
 
-            const dressData = {
-                id,
-                name,
-                category,
-                color,
-                price,
-                image1: image1Data,
-                image2: image2Data,
-                image3: image3Data,
-                material,
-                size,
-                quantity,
-                offer,
-                status
-            };
+            if (sizearray.length === quantityarray.length) {
+                // console.log(sizearray);
 
-            const newDress = await schema.create(dressData);
+                const dressData = {
+                    id,
+                    name,
+                    category,
+                    color,
+                    price,
+                    image1: image1Data,
+                    image2: image2Data,
+                    image3: image3Data,
+                    material,
+                    size: sizearray,
+                    quantity: quantityarray,
+                    offer,
+                    status
+                };
+                const newDress = await schema.create(dressData);
 
-            res.status(200).json(newDress);
+                res.status(200).json(newDress);
+            }
+
         });
     } catch (e) {
         res.status(400).json({ error: e.message });
