@@ -33,16 +33,13 @@ const getOne = async (req, res) => {
 // add a new data
 const createNew = async (req, res) => {
     try {
-        // Configure multer middleware for file uploads
         const upload = multer({ storage: storage }).fields([{ name: 'image1' }, { name: 'image2' }, { name: 'image3' }]);
 
-        // Execute multer middleware to handle file uploads
         upload(req, res, async (err) => {
             if (err) {
                 return res.status(400).json({ error: err.message });
             }
 
-            // Process uploaded files
             const processImage = (fieldName) => {
                 if (!req.files[fieldName]) {
                     return null;
@@ -51,12 +48,10 @@ const createNew = async (req, res) => {
                 return "data:image/gif;base64," + imageBuffer.toString('base64');
             };
 
-            // Convert uploaded images to base64
             const image1Data = processImage('image1');
             const image2Data = processImage('image2');
             const image3Data = processImage('image3');
 
-            // Extract other fields from req.body
             const {
                 id,
                 name,
@@ -69,8 +64,8 @@ const createNew = async (req, res) => {
                 offer,
                 status
             } = req.body;
+            console.log(size);
 
-            // Construct dress data object with base64 image data
             const dressData = {
                 id,
                 name,
@@ -87,10 +82,8 @@ const createNew = async (req, res) => {
                 status
             };
 
-            // Save dress data to database
             const newDress = await schema.create(dressData);
 
-            // Respond with the newly created dress
             res.status(200).json(newDress);
         });
     } catch (e) {
